@@ -15,8 +15,11 @@ router.get('/create_meeting', verify, async (req, res) => {
 });
 
 router.get("/my_meetings", verify, async (req, res) => {
-    const meetings = await meetingSchema.where({ user_id: req.user._id });
-        res.send({"meetings" :  meetings});
+        const meetings = await meetingSchema.where({user_id: req.user._id});
+        res.send({
+            "success": true,
+            "meetings": meetings
+        });
     },
 );
 
@@ -24,8 +27,6 @@ router.get("/:roomId", verify, async (req, res) => {
         res.send(`jahman ${req.params.roomId}`);
     },
 );
-
-
 
 
 module.exports = router;
