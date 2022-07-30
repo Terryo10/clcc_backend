@@ -1,17 +1,26 @@
 const verify = require('../../middleware/auth');
-const messageExpirationTimeMS = 5*60 * 1000;
+const messageExpirationTimeMS = 5 * 60 * 1000;
+const User = require("../../models/user");
 
 class Connection {
     constructor(io, socket) {
         this.socket = socket;
         this.io = io;
-
+        onlineusers = [];
         socket.on('getMessages', () => this.getMessages());
+        socket.on('room', (data) => this.joinRoom(data))
         socket.on('message', (value) => this.handleMessage(value));
         socket.on('disconnect', () => this.disconnect());
         socket.on('connect_error', (err) => {
             console.log(`connect_error due to ${err.message}`);
         });
+    }
+
+
+    joinRoom = (data)  =>{
+      var user  = User.findOne({id: data.id});
+      var meeting = data.meeting;
+
     }
 
     sendMessage(message) {
@@ -23,31 +32,15 @@ class Connection {
     }
 
     handleMessage(value) {
-        const message = {
-            id: uuidv4(),
-            user: users.get(this.socket) || defaultUser,
-            value,
-            time: Date.now()
-        };
-
-        messages.add(message);
-        this.sendMessage(message);
-
-        setTimeout(
-            () => {
-                messages.delete(message);
-                this.io.sockets.emit('deleteMessage', message.id);
-            },
-            messageExpirationTimeMS,
-        );
+        console.log(`kkkkk ${value.name}`);
     }
 
     disconnect() {
-        users.delete(this.socket);
+
     }
 }
 
-function chat(io) {
+function chat(io,) {
     io.use(verify);
     io.on('connection', (socket) => {
         new Connection(io, socket);

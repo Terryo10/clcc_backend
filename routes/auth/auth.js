@@ -43,7 +43,7 @@ router.post("/login", async (req, res) => {
         const user = await User.findOne({email: req.body.email});
         const validPassword = await bcrypt.compare(req.body.password, user.password);
         if (!validPassword) return res.status(400).send({message: "password invalid"});
-        console.log(process.env.JWT)
+
         const token = jwt.sign({_id: user.id}, process.env.JWT);
         res.send({
             token: token, success: true, user: {

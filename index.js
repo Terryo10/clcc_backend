@@ -9,8 +9,15 @@ const morgan = require('morgan');
 const dotenv = require('dotenv')
 let mongoose = require('mongoose');
 const bodyParser = require(  'body-parser');
-const server = require('http').Server(app)
-const io = require('socket.io')(server);
+const server = require('http').Server(app);
+const chat = require('./routes/classrooms/chat');
+const io = require('socket.io')(server , {
+  cors:{
+    origin: "*",
+    methods:['GET', 'POST']
+  }
+});
+
 dotenv.config();
 
 let mongoDB = process.env.DB_CONN;
@@ -30,18 +37,8 @@ app.use('/room/', classroom );
 app.get('/', (req, res) => {
   res.send('CLCC API :)')
 });
+chat(io);
 
 
-io.on('connection', socket => {
-  socket.on('join-room', (roomId, userId) => {
-    socket.join(roomId)
-    socket.to(roomId).broadcast.emit('user-connected', userId)
-
-
-    socket.on('disconnect', () => {
-      socket.to(roomId).broadcast.emit('user-disconnected', userId)
-    })
-  })
-});
 
 server.listen(port)
