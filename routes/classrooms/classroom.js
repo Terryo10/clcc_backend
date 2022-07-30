@@ -54,7 +54,6 @@ router.post("/add_user_to_meeting", verify, async (req, res) => {
                         const savedMeeting = await meeting.save();
                         res.send({'meeting': savedMeeting},);
                     }
-
                 }
             }
         } else {
